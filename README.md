@@ -1,6 +1,10 @@
-<h1 align="center">🥰小六爻三数卜卦</h1>
+<h1 align="center">小六爻三数简易卜卦</h1>
 
 小六爻Python程序-易经六十四卦宫位算术
+
+1. 传统六爻预测
+2. 八卦预测
+3. 简易四象预测
 
 灵感来自bilibili video uploader:荀爽
 
