@@ -6,7 +6,6 @@
 2. 八卦预测
 3. 简易四象预测
 
-灵感来自bilibili video uploader:荀爽
 
 宫位介绍（网络收集）：
 
