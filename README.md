@@ -1,4 +1,4 @@
-<h1 align="center">![Pakua_with_frame](https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Pakua_with_frame.svg/1200px-Pakua_with_frame.svg.png)小六爻三数简易卜卦</h1>
+<h1 align="center">小六爻三数简易卜卦</h1>
 
 小六爻Python程序-易经六十四卦宫位算术
 
