@@ -1,9 +1,6 @@
-import tkinter as tk
-from tkinter import messagebox
-import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
+import maliang
 
-# 定义数据
+# 预测逻辑函数
 def get_elements(n1, n2, n3):
     elements = [
         "大安（震）（木）（阳）：平安吉祥，诸事顺遂。长期、缓慢、稳定",
@@ -16,10 +13,12 @@ def get_elements(n1, n2, n3):
         "桃花（艮）（土）（阴）：姻缘桃花，人际和谐。欲望、牵绊、异性",
         "天德（乾）（金）（阳）：吉祥如意，贵人相助。贵人、上司、高远"
     ]
-    first_index = (n1 - 1) % len(elements)
-    second_index = (n1 + n2 - 2) % len(elements)
-    third_index = (n1 + n2 + n3 - 3) % len(elements)
-    return elements[first_index], elements[second_index], elements[third_index]
+    return (
+        elements[(n1 - 1) % len(elements)],
+        elements[(n1 + n2 - 2) % len(elements)],
+        elements[(n1 + n2 + n3 - 3) % len(elements)]
+    )
+
 
 def get_bagua(n1, n2, n3):
     bagua = [
@@ -32,8 +31,8 @@ def get_bagua(n1, n2, n3):
         "艮卦：山不动，君子以思不出其位。稳重、停止、内省",
         "兑卦：泽气悦，君子以朋友讲习。喜悦、和谐、交流"
     ]
-    index = (n1 + n2 + n3) % 8
-    return bagua[index]
+    return bagua[(n1 + n2 + n3) % 8]
+
 
 def get_yijing(n1, n2, n3):
     yijing = [
@@ -42,188 +41,75 @@ def get_yijing(n1, n2, n3):
         "平：平平常常，无喜无忧",
         "悔：有所悔恨，需要反省"
     ]
-    index = (n1 * n2 * n3) % 4
-    return yijing[index]
+    return yijing[(n1 * n2 * n3) % 4]
 
-class App(ttk.Window):
-    def __init__(self):
-        super().__init__(themename="morph")  # 使用 ttkbootstrap 的 "morph" 主题
-        self.title("卜卦")
-        self.geometry("800x600")
-        self.minsize(600, 400)  # 设置窗口最小大小
-        self.resizable(True, True)  # 允许调整窗口大小
 
-        # 设置窗口图标（可选）
+# 创建主窗口
+root = maliang.Tk(title="卜卦")
+root.center()
+
+# 创建画布并设置渐变背景
+cv = maliang.Canvas(auto_zoom=True, keep_ratio="min", free_anchor=True)
+cv.place(width=1280, height=720, x=640, y=360, anchor="center")
+
+# 标题（使用更大字号和居中对齐）
+maliang.Text(cv, (640, 80), text="卜 卦", fontsize=48, anchor="center")
+
+# 预测方式选择 + 输入提示文本（调整间距和字号）
+maliang.Text(cv, (400, 150), text="选择预测方式并输入三个数字：", fontsize=20, anchor="w")
+mode_select = maliang.OptionButton(cv, (720, 130), text=("传统六爻预测", "八卦预测", "简易四象预测", "综合预测"), default=0)
+maliang.Tooltip(mode_select, text="选择不同的预测方式将得到不同的解读结果")
+
+# 数字输入框（水平方向排列）
+n1_input = maliang.InputBox(cv, (500, 200), (80, 40), placeholder="第一个数", fontsize=16, align="center")
+maliang.Tooltip(n1_input, text="请输入1-9之间的数字")
+
+n2_input = maliang.InputBox(cv, (600, 200), (80, 40), placeholder="第二个数", fontsize=16, align="center")
+maliang.Tooltip(n2_input, text="请输入1-9之间的数字")
+
+n3_input = maliang.InputBox(cv, (700, 200), (80, 40), placeholder="第三个数", fontsize=16, align="center")
+maliang.Tooltip(n3_input, text="请输入1-9之间的数字")
+
+# 结果显示区域（使用Text组件，并设置合适的字体和对齐方式）
+result_box = maliang.Text(cv, (370, 390), text="预测结果将在此显示", fontsize=16, anchor="nw")
+
+# 预测按钮功能
+def predict():
+    try:
+        n1, n2, n3 = int(n1_input.get()), int(n2_input.get()), int(n3_input.get())
+        if not all(1 <= n <= 9 for n in [n1, n2, n3]):
+            result_box.set("错误：所有数字必须在 1 到 9 之间。")
+            return
+
         try:
-            self.iconbitmap("icon.ico")  # 替换为你的图标文件路径
+            mode_idx = mode_select.get()  # 获取选中项的索引
         except:
-            pass
+            result_box.set("请先选择预测方式！")
+            return
+            
+        modes = ["传统六爻预测", "八卦预测", "简易四象预测", "综合预测"]
+        mode = modes[mode_idx]
+        
+        elements_result = get_elements(n1, n2, n3)
+        bagua_result = get_bagua(n1, n2, n3)
+        yijing_result = get_yijing(n1, n2, n3)
+        
+        if mode_idx == 0:  # 传统六爻预测
+            result = f"预测方式：{mode}\n数字：{n1}, {n2}, {n3}\n\n结果：\n初爻：{elements_result[0]}\n二爻：{elements_result[1]}\n三爻：{elements_result[2]}"
+        elif mode_idx == 1:  # 八卦预测
+            result = f"预测方式：{mode}\n数字：{n1}, {n2}, {n3}\n\n结果：\n{bagua_result}"
+        elif mode_idx == 2:  # 简易四象预测
+            result = f"预测方式：{mode}\n数字：{n1}, {n2}, {n3}\n\n结果：\n{yijing_result}"
+        else:  # 综合预测
+            result = f"预测方式：{mode}\n数字：{n1}, {n2}, {n3}\n\n六爻结果：\n初爻：{elements_result[0]}\n二爻：{elements_result[1]}\n三爻：{elements_result[2]}\n\n八卦：\n{bagua_result}\n\n四象：\n{yijing_result}"
+        
+        result_box.set(result)
+    except ValueError:
+        result_box.set("错误：请输入有效的数字！")
 
-        self.create_widgets()
+# 绑定预测按钮功能（调整大小和字号）
+predict_btn = maliang.Button(cv, (520, 290), (240, 60), text="开始预测", command=predict, fontsize=20)
+maliang.Tooltip(predict_btn, text="点击开始进行卜卦预测")
 
-    def create_widgets(self):
-        # 主容器
-        self.main_frame = ttk.Frame(self)
-        self.main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-
-        # 标题
-        self.title_label = ttk.Label(
-            self.main_frame,
-            text="卜卦",
-            font=("Helvetica", 24, "bold"),
-            bootstyle=PRIMARY
-        )
-        self.title_label.pack(pady=20)
-
-        # 选择预测方式
-        self.mode_frame = ttk.Frame(self.main_frame)
-        self.mode_frame.pack(pady=10)
-
-        self.mode_label = ttk.Label(
-            self.mode_frame,
-            text="选择预测方式并输入三个数字：",
-            font=("Helvetica", 12),
-            bootstyle=SECONDARY
-        )
-        self.mode_label.pack(side=tk.LEFT, padx=5)
-
-        self.mode_var = tk.StringVar()
-        self.mode_combobox = ttk.Combobox(
-            self.mode_frame,
-            textvariable=self.mode_var,
-            values=["传统六爻预测", "八卦预测", "简易四象预测", "综合预测"],
-            state="readonly",
-            width=20,
-            bootstyle=INFO
-        )
-        self.mode_combobox.current(0)  # 默认选择第一个
-        self.mode_combobox.pack(side=tk.LEFT, padx=5)
-
-        # 输入数字
-        self.number_frame = ttk.Frame(self.main_frame)
-        self.number_frame.pack(pady=20)
-
-        self.n1_entry = ttk.Entry(
-            self.number_frame,
-            width=5,
-            font=("Helvetica", 12),
-            bootstyle=INFO
-        )
-        self.n1_entry.pack(side=tk.LEFT, padx=10)
-        self.n2_entry = ttk.Entry(
-            self.number_frame,
-            width=5,
-            font=("Helvetica", 12),
-            bootstyle=INFO
-        )
-        self.n2_entry.pack(side=tk.LEFT, padx=10)
-        self.n3_entry = ttk.Entry(
-            self.number_frame,
-            width=5,
-            font=("Helvetica", 12),
-            bootstyle=INFO
-        )
-        self.n3_entry.pack(side=tk.LEFT, padx=10)
-
-        # 预测按钮
-        self.predict_button = ttk.Button(
-            self.main_frame,
-            text="开始预测",
-            command=self.predict,
-            bootstyle=SUCCESS,
-            width=15
-        )
-        self.predict_button.pack(pady=20)
-
-        # 结果显示区域
-        self.result_canvas = tk.Canvas(
-            self.main_frame,
-            bg="#f0f0f0",
-            bd=0,
-            highlightthickness=0,
-            relief=tk.FLAT
-        )
-        self.result_canvas.pack(fill=tk.BOTH, expand=True, pady=10)
-
-        # 结果显示文本
-        self.result_text = tk.Text(
-            self.result_canvas,
-            bg="#f0f0f0",
-            font=("Helvetica", 12),
-            wrap=tk.WORD,
-            bd=0,
-            highlightthickness=0
-        )
-        self.result_text_window = self.result_canvas.create_window(
-            10, 10,
-            window=self.result_text,
-            anchor=tk.NW,
-            width=760,  # 初始宽度
-            height=300  # 初始高度
-        )
-
-        # 绑定窗口大小调整事件
-        self.result_canvas.bind("<Configure>", self.on_canvas_resize)
-
-    def on_canvas_resize(self, event):
-        """当 Canvas 大小调整时，动态调整 Text 组件的大小"""
-        self.result_canvas.itemconfig(
-            self.result_text_window,
-            width=event.width - 20,  # 减去边距
-            height=event.height - 20  # 减去边距
-        )
-
-    def predict(self):
-        try:
-            n1 = int(self.n1_entry.get())
-            n2 = int(self.n2_entry.get())
-            n3 = int(self.n3_entry.get())
-
-            if not all(1 <= n <= 9 for n in [n1, n2, n3]):
-                messagebox.showerror("错误", "所有数字必须在1到9之间")
-                return
-
-            mode = self.mode_combobox.current()
-            self.result_text.delete(1.0, tk.END)
-
-            if mode in [0, 3]:  # 传统六爻预测或综合预测
-                result = get_elements(n1, n2, n3)
-                self.result_text.insert(tk.END, "六爻预测结果：\n")
-                for element in result:
-                    self.result_text.insert(tk.END, element + "\n")
-
-            if mode in [1, 3]:  # 八卦预测或综合预测
-                bagua_result = get_bagua(n1, n2, n3)
-                self.result_text.insert(tk.END, "\n八卦预测结果：\n")
-                self.result_text.insert(tk.END, bagua_result + "\n")
-
-            if mode in [2, 3]:  # 简易四象预测或综合预测
-                yijing_result = get_yijing(n1, n2, n3)
-                self.result_text.insert(tk.END, "\n四象预测结果：\n")
-                self.result_text.insert(tk.END, yijing_result + "\n")
-
-            # 添加动画效果
-            self.animate_result()
-
-        except ValueError:
-            messagebox.showerror("错误", "请输入有效的数字")
-
-    def animate_result(self):
-        """简单的动画效果：逐渐改变背景颜色"""
-        colors = ["#f0f0f0", "#e0e0e0", "#d0d0d0", "#c0c0c0", "#b0b0b0", "#a0a0a0"]
-        self.animate_colors(colors, 0)
-
-    def animate_colors(self, colors, index):
-        """递归实现颜色动画"""
-        if index < len(colors):
-            self.result_canvas.configure(bg=colors[index])
-            self.result_text.configure(bg=colors[index])
-            self.after(100, self.animate_colors, colors, index + 1)
-        else:
-            # 动画结束后恢复原色
-            self.result_canvas.configure(bg="#f0f0f0")
-            self.result_text.configure(bg="#f0f0f0")
-
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+# 启动主循环
+root.mainloop()
