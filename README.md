@@ -7,6 +7,7 @@
 3. 简易四象预测
 4. 综合预测
 
+![image](https://github.com/user-attachments/assets/ba36061c-fae2-4d8e-9c17-4881a59c1acc)
 
 宫位介绍（网络收集）：
 
