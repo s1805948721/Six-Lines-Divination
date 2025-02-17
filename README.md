@@ -1,9 +1,11 @@
 <div align="center">
-    <img src="https://github.com/user-attachments/assets/4a85c68a-13cd-432a-bb92-82ca9cc1aac9" alt="Eight Trigrams">
+    <img src="https://github.com/user-attachments/assets/0784555e-f7bf-4a2a-9f56-bf86af8d9655" alt="Yinyang" width="128" height="128">
     <h1>小六爻三数简易卜卦</h1>
 </div>
 
+
 小六爻Python程序-易经六十四卦宫位算术
+
 
 
 -测试选项-
