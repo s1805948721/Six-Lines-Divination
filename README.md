@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://github.com/user-attachments/assets/28e31d66-1cc7-451b-888a-f46c0c304626" alt="Eight Trigrams">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Yin_yang.svg/1280px-Yin_yang.svg.png" alt="Eight Trigrams">
     <h1>小六爻三数简易卜卦</h1>
 </div>
 
