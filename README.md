@@ -1,6 +1,11 @@
-<h1 align="center">小六爻三数简易卜卦</h1>
+<div align="center">
+    <img src="https://github.com/user-attachments/assets/28e31d66-1cc7-451b-888a-f46c0c304626" alt="Eight Trigrams">
+    <h1>小六爻三数简易卜卦</h1>
+</div>
 
 小六爻Python程序-易经六十四卦宫位算术
+
+-测试选项-
 
 1. 传统六爻预测
 2. 八卦预测
